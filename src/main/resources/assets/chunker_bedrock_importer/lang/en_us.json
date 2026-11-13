@@ -1,0 +1,21 @@
+{
+	"chunker_bedrock_importer.button": "Import Bedrock",
+	"chunker_bedrock_importer.screen.title": "Import a Bedrock world (Chunker)",
+	"chunker_bedrock_importer.screen.path_label": "Bedrock worlds folder or .mcworld file",
+	"chunker_bedrock_importer.screen.hint": "Leave empty to auto-detect Bedrock worlds (Windows / Android / console exports...)",
+	"chunker_bedrock_importer.screen.refresh": "Refresh",
+	"chunker_bedrock_importer.screen.import": "Import",
+	"chunker_bedrock_importer.screen.done": "Done",
+	"chunker_bedrock_importer.screen.play": "Play this world",
+	"chunker_bedrock_importer.screen.close": "Close",
+	"chunker_bedrock_importer.screen.empty": "No Bedrock world found in this folder.",
+	"chunker_bedrock_importer.screen.worlds_of": "Bedrock worlds found in:",
+	"chunker_bedrock_importer.screen.converting": "Converting '%s' to Java Edition...",
+	"chunker_bedrock_importer.screen.extracting": "Extracting .mcworld archive...",
+	"chunker_bedrock_importer.screen.compacting": "Compacting world (LevelDB), please wait...",
+	"chunker_bedrock_importer.screen.success": "Conversion complete! World saved as '%s'.",
+	"chunker_bedrock_importer.screen.success_hint": "The world will be upgraded to Minecraft 26.3 when opened.",
+	"chunker_bedrock_importer.screen.failed": "Conversion failed: %s",
+	"chunker_bedrock_importer.screen.background_hint": "You can close this screen, the conversion continues in background.",
+	"chunker_bedrock_importer.screen.date": "Modified: %s"
+}

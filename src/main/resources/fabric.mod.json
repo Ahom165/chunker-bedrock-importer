@@ -1,0 +1,31 @@
+{
+        "schemaVersion": 1,
+        "id": "chunker_bedrock_importer",
+        "version": "${version}",
+        "name": "Chunker Bedrock Importer",
+        "description": "Detects Bedrock Edition worlds (folders or .mcworld), converts them to Java Edition automatically using the Chunker engine (Hive Games, MIT) and opens the converted world directly from the world selection screen.",
+        "authors": [
+                "Z.ai"
+        ],
+        "contact": {
+                "homepage": "https://github.com/HiveGamesOSS/Chunker"
+        },
+        "license": "MIT",
+        "environment": "client",
+        "entrypoints": {
+                "client": [
+                        "com.zai.chunkerimporter.ChunkerBedrockImporter"
+                ]
+        },
+        "mixins": [
+                {
+                        "config": "chunker_bedrock_importer.mixins.json",
+                        "environment": "client"
+                }
+        ],
+        "depends": {
+                "fabricloader": ">=0.20.1",
+                "minecraft": "~26.3",
+                "java": ">=25"
+        }
+}
