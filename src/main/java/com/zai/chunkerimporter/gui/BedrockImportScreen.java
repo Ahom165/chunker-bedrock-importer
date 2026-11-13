@@ -17,7 +17,9 @@ import net.minecraft.network.chat.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
+import java.util.ArrayDeque;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +45,8 @@ public class BedrockImportScreen extends Screen {
         private double scroll = 0.0D;
         private ConversionJob job = null;
         private boolean scannedOnce = false;
+        /** Dropped .mcworld files waiting for the current conversion to finish. */
+        private final Deque<Path> dropQueue = new ArrayDeque<>();
 
         public BedrockImportScreen(Screen parent) {
                 super(Component.translatable("chunker_bedrock_importer.screen.title"));
@@ -53,15 +57,21 @@ public class BedrockImportScreen extends Screen {
 
         @Override
         protected void init() {
-                int fieldWidth = Math.min(330, this.width / 2 - 60);
-                pathBox = new EditBox(this.font, this.width / 2 - fieldWidth - 44, 30, fieldWidth, 20,
+                // Path field + Refresh button side by side, centered as one group (no overlap)
+                Component refreshLabel = Component.translatable("chunker_bedrock_importer.screen.refresh");
+                int refreshWidth = Math.max(40, this.font.width(refreshLabel) + 12);
+                int fieldWidth = Math.min(300, this.width - refreshWidth - 60);
+                if (fieldWidth < 80) fieldWidth = Math.max(80, this.width - refreshWidth - 20);
+                int groupWidth = fieldWidth + 4 + refreshWidth;
+                int groupX = this.width / 2 - groupWidth / 2;
+                pathBox = new EditBox(this.font, groupX, 30, fieldWidth, 20,
                                 Component.translatable("chunker_bedrock_importer.screen.path_label"));
                 pathBox.setMaxLength(400);
                 pathBox.setValue(currentRootString());
                 pathBox.setHint(Component.translatable("chunker_bedrock_importer.screen.hint"));
                 addRenderableWidget(pathBox);
-                addRenderableWidget(Button.builder(Component.translatable("chunker_bedrock_importer.screen.refresh"), b -> rescan())
-                                .bounds(this.width / 2 - fieldWidth - 40, 30, 36, 20).build());
+                addRenderableWidget(Button.builder(refreshLabel, b -> rescan())
+                                .bounds(groupX + fieldWidth + 4, 30, refreshWidth, 20).build());
                 addRenderableWidget(Button.builder(Component.translatable("chunker_bedrock_importer.screen.done"), b -> onClose())
                                 .bounds(this.width / 2 - 50, this.height - 26, 100, 20).build());
 
@@ -106,8 +116,11 @@ public class BedrockImportScreen extends Screen {
                 graphics.fill(x0, listTop, x1, listBottom, 0x99000000);
 
                 if (this.worlds.isEmpty() && this.job == null) {
+                        int midY = (listTop + listBottom) / 2;
                         graphics.centeredText(this.font, Component.translatable("chunker_bedrock_importer.screen.empty"),
-                                        this.width / 2, (listTop + listBottom) / 2 - 4, 0xFFAAAAAA);
+                                        this.width / 2, midY - 12, 0xFFAAAAAA);
+                        graphics.centeredText(this.font, Component.translatable("chunker_bedrock_importer.screen.drop_hint"),
+                                        this.width / 2, midY + 6, 0xFF666666);
                 } else if (this.scannedOnce && this.job == null) {
                         Component header = Component.translatable("chunker_bedrock_importer.screen.worlds_of");
                         int headerY = listTop + 2;
@@ -252,6 +265,7 @@ public class BedrockImportScreen extends Screen {
                                         this.job.claimed = true;
                                         activeJob = null;
                                         this.job = null;
+                                        startNextDropped(); // chain the next dropped .mcworld, if any
                                 }
                                 return true;
                         }
@@ -275,6 +289,45 @@ public class BedrockImportScreen extends Screen {
                         }
                 }
                 return super.mouseClicked(event, doubled);
+        }
+
+        // ------------------------------------------------------------------ drag & drop
+
+        @Override
+        public void onFilesDrop(List<Path> files) {
+                for (Path file : files) {
+                        String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
+                        if (fileName.endsWith(".mcworld")) {
+                                this.dropQueue.add(file);
+                        }
+                }
+                if (this.dropQueue.isEmpty()) return;
+
+                // Show the dropped files' folder in the path field for context
+                Path first = this.dropQueue.peek();
+                Path parent = first.getParent();
+                if (parent != null && pathBox != null) {
+                        pathBox.setValue(parent.toString());
+                }
+                startNextDropped();
+        }
+
+        /** Starts the conversion of the next dropped file, if no job is running. */
+        private void startNextDropped() {
+                if (this.job != null) return;
+                Path next = this.dropQueue.poll();
+                if (next == null) return;
+                try {
+                        String fileName = next.getFileName().toString();
+                        String name = fileName.endsWith(".mcworld")
+                                        ? fileName.substring(0, fileName.length() - ".mcworld".length())
+                                        : fileName;
+                        BedrockWorld world = new BedrockWorld(next, name, Files.size(next), Files.getLastModifiedTime(next).toMillis(), true);
+                        startImport(world);
+                } catch (Exception e) {
+                        ChunkerBedrockImporter.LOGGER.error("Failed to import dropped file {}", next, e);
+                        startNextDropped();
+                }
         }
 
         @Override
