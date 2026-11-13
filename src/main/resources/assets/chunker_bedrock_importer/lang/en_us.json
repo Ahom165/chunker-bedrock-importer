@@ -14,7 +14,7 @@
   "chunker_bedrock_importer.screen.extracting": "Extracting .mcworld archive...",
   "chunker_bedrock_importer.screen.compacting": "Compacting world (LevelDB), please wait...",
   "chunker_bedrock_importer.screen.success": "Conversion complete! World saved as '%s'.",
-  "chunker_bedrock_importer.screen.success_hint": "The world will be upgraded to Minecraft 26.3 when opened.",
+  "chunker_bedrock_importer.screen.success_hint": "The world is saved in the native Minecraft 26.3 format.",
   "chunker_bedrock_importer.screen.failed": "Conversion failed: %s",
   "chunker_bedrock_importer.screen.background_hint": "You can close this screen, the conversion continues in background.",
   "chunker_bedrock_importer.screen.date": "Modified: %s",

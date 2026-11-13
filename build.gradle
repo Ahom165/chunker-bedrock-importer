@@ -1,43 +1,44 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+        id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
 version = "${mod_version}+mc${minecraft_version}"
 group = maven_group
 
 base {
-	archivesName = archives_base_name
+        archivesName = archives_base_name
 }
 
 repositories {
-	flatDir {
-		// Local directory holding the Chunker engine jar (built from HiveGamesOSS/Chunker)
-		dirs 'libs'
-	}
+        flatDir {
+                // Local directory holding the Chunker engine jar (built from HiveGamesOSS/Chunker)
+                dirs 'libs'
+        }
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${loader_version}"
+        minecraft "com.mojang:minecraft:${minecraft_version}"
+        implementation "net.fabricmc:fabric-loader:${loader_version}"
 
-	// Chunker conversion engine (Bedrock <-> Java), bundled in the mod jar
-	implementation(name: 'chunker-cli-1.0.0')
-	include(name: 'chunker-cli-1.0.0')
+        // Chunker conversion engine (Bedrock <-> Java), bundled in the mod jar
+        // Official release 1.21.0 (2026-10-02), slimmed: MC-provided libs removed, Caffeine kept
+        implementation(name: 'chunker-cli-1.21.0')
+        include(name: 'chunker-cli-1.21.0')
 }
 
 processResources {
-	inputs.property "version", project.version
+        inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
+        filesMatching("fabric.mod.json") {
+                expand "version": project.version
+        }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 25
+        it.options.release = 25
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_25
-	targetCompatibility = JavaVersion.VERSION_25
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
 }

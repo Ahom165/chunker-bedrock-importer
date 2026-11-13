@@ -36,22 +36,22 @@ Interface disponible en **français** et **anglais** (selon la langue du jeu).
 
 ## Détails techniques
 
-- **Moteur de conversion** : [Chunker](https://github.com/HiveGamesOSS/Chunker) v1.0.0 (MIT, Hive Games),
-  cloné depuis le dépôt officiel, compilé et embarqué dans le jar du mod (jar-in-jar).
-  Le jar embarqué est « allégé » : les bibliothèques déjà fournies par Minecraft (fastutil, Guava,
-  Gson, Caffeine, lz4) sont exclues pour réduire le poids (2,6 Mo au lieu de 30 Mo).
-- **Détection de version** : Chunker détecte tout seul la version Bedrock du monde (1.12.0 → 1.21.20).
-- **Sortie** : le monde converti est écrit au dernier format Java supporté par Chunker (1.21.1) ;
-  Minecraft 26.3 le **met à jour automatiquement** à l'ouverture (DataFixerUpper vanilla) —
-  aucun formatage intermédiaire à faire.
+- **Moteur de conversion** : [Chunker](https://github.com/HiveGamesOSS/Chunker) **v1.21.0** (MIT, Hive Games),
+  release officielle du 2 octobre 2026, embarquée dans le jar du mod (jar-in-jar).
+  Le jar embarqué est « allégé » : les bibliothèques déjà fournies par Minecraft 26.3 (fastutil, Guava,
+  Gson, failureaccess, lz4) sont exclues ; Caffeine est conservée (4 Mo au lieu de 32 Mo).
+- **Détection de version** : Chunker détecte tout seul la version Bedrock du monde
+  (1.12.0 → 1.21.130 et 1.26.0 → 1.26.60).
+- **Sortie** : le monde converti est écrit **directement au format Java 26.3** (dernier format
+  supporté par Chunker) — aucun upgrade ni rechargement intermédiaire.
 - **Nom du monde** : lu directement dans le `level.dat` Bedrock (NBT little-endian, parseur intégré).
 - **Sécurité** : le monde Bedrock source n'est jamais modifié ; les fichiers `.mcworld` sont extraits
   dans un dossier temporaire supprimé après la conversion.
 
 ## Limites connues
 
-- Chunker (version open source) convertit les mondes **Bedrock 1.12.0 → 1.21.20**. Un monde Bedrock
-  plus récent que 1.21.20 peut ne pas être reconnu.
+- Chunker (version open source 1.21.0) convertit les mondes **Bedrock 1.12.0 → 1.21.130 et
+  1.26.0 → 1.26.60**. Un monde Bedrock plus récent peut ne pas être reconnu.
 - Certaines entités/objets/potions sans équivalent Java exact sont signalés en warnings par Chunker
   (« Missing mapping ») et peuvent être omis — c'est un comportement du moteur Chunker lui-même.
 - Conversion **Bedrock → Java uniquement** dans la fenêtre d'import (Java → Bedrock reste possible
@@ -76,12 +76,17 @@ Pour reconstruire le moteur Chunker depuis son dépôt (optionnel) :
 git clone https://github.com/HiveGames-OSS/Chunker.git
 cd Chunker
 # Dans cli/build.gradle.kts, le bloc tasks.shadowJar exclut les libs fournies par Minecraft :
-#   exclude("it/unimi/**") ; exclude("com/google/**") ; exclude("com/github/**")
+#   exclude("it/unimi/**") ; exclude("com/google/**") ; exclude("net/jpountz/**")
 #   exclude("org/checkerframework/**") ; exclude("org/jetbrains/**") ; exclude("org/intellij/**")
-#   exclude("net/jpountz/**") ; exclude("linux/**") ; exclude("darwin/**") ; exclude("win32/**")
+#   exclude("linux/**") ; exclude("darwin/**") ; exclude("win32/**")
+# (conserver com/github/benmanes/caffeine : non fournie par Minecraft)
 JAVA_HOME=<JDK 21> ./gradlew :cli:shadowJar -x test
-cp build/libs/chunker-cli-1.0.0.jar ../chunker-bedrock-importer/libs/
+cp build/libs/chunker-cli-*.jar ../chunker-bedrock-importer/libs/
 ```
+
+Ou plus simple : télécharger le `chunker-cli-*.jar` pré-compilé depuis la page
+[Releases du dépôt Chunker](https://github.com/HiveGamesOSS/Chunker/releases)
+puis l'alléger comme décrit ci-dessus.
 
 ## Crédits et licences
 

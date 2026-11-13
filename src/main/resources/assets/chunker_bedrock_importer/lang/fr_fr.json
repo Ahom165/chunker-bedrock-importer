@@ -14,7 +14,7 @@
   "chunker_bedrock_importer.screen.extracting": "Extraction de l'archive .mcworld...",
   "chunker_bedrock_importer.screen.compacting": "Compactage du monde (LevelDB), veuillez patienter...",
   "chunker_bedrock_importer.screen.success": "Conversion terminée ! Monde enregistré sous '%s'.",
-  "chunker_bedrock_importer.screen.success_hint": "Le monde sera mis à jour vers Minecraft 26.3 à l'ouverture.",
+  "chunker_bedrock_importer.screen.success_hint": "Le monde est enregistre au format natif Minecraft 26.3.",
   "chunker_bedrock_importer.screen.failed": "Échec de la conversion : %s",
   "chunker_bedrock_importer.screen.background_hint": "Vous pouvez fermer cet écran, la conversion continue en arrière-plan.",
   "chunker_bedrock_importer.screen.date": "Modifié : %s",
